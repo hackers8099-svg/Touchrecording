@@ -2,19 +2,24 @@ name: Build APK
 on: [push, workflow_dispatch]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - name: Unzip project
-        run: for f in *.zip; do unzip -oq "$f"; done
+        run: |
+          for f in *.zip; do unzip -oq "$f"; done
+          ls -la
+          echo "ANDROID_HOME=$ANDROID_HOME"
       - name: Build APK
         working-directory: TouchRecorder
-        run: chmod +x gradlew && ./gradlew --no-daemon assembleDebug
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: TouchRecorder-apk
