@@ -11,7 +11,7 @@ jobs:
           java-version: '17'
       - uses: android-actions/setup-android@v3
       - name: Unzip project
-        run: unzip -q TouchRecorder.zip
+        run: for f in *.zip; do unzip -oq "$f"; done
       - name: Build APK
         working-directory: TouchRecorder
         run: chmod +x gradlew && ./gradlew --no-daemon assembleDebug
